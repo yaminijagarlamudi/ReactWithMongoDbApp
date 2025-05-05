@@ -15,3 +15,6 @@ Open up two terminals navigating to cooresponding app folder and run below comma
 Run commad for both Front End and back end Apps : npm run dev in your terminal.
 
 You will see a simple react app with some article data.
+
+
+Based on the machine you have install MongoDb on you local or use a remote MongoDb instance with a simple DB named 'full-stack-react-db' and insert article data into it.
