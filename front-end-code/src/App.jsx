@@ -5,10 +5,11 @@ import { createBrowserRouter,
 import './App.css'
 import HomePage from './frontendpages/HomePage'
 import ArticlesListpage from './frontendpages/ArticlesListPage'
-import ArticlePage from './frontendpages/ArticlePage'
+import ArticlePage,{loader as articleLoader} from './frontendpages/ArticlePage'
 import AboutPage from './frontendpages/AboutPage'
 import Layout from './Layout'
 import NotFoundPage from './frontendpages/NotFoundPage'
+import axios from 'axios';
 
 const routes = [{
   path: '/',
@@ -27,8 +28,9 @@ const routes = [{
     element: <ArticlesListpage />
   },
   {
-    path: '/articles/:name', // -> /articles/learn-react
-    element: <ArticlePage />
+    path: '/articles/:name', 
+    element: <ArticlePage />,
+    loader : articleLoader
   }]
 }]
 
