@@ -44,7 +44,7 @@ app.post('/api/articles/:name/upvote', async (req, res) => {
             $inc: { upVotes: 1 }
         },
         {
-            returnDocument: "after",
+            ReturnDocument: "after",
         });
 
 
@@ -64,7 +64,7 @@ app.post('/api/articles/:name/comments', async (req, res) => {
             $push: { comments: { postedBy, text } }
         },
         {
-            returnDocument: "after",
+            ReturnDocument: "after",
         });
 
 
