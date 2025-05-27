@@ -49,3 +49,5 @@ dist-ssr
  
 # Mongo Data Files
 data/
+
+back-end/credentials.json

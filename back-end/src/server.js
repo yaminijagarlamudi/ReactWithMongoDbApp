@@ -1,5 +1,14 @@
 import express from 'express';
 import { MongoClient, ReturnDocument, ServerApiVersion } from 'mongodb'
+import admin from 'firebase-admin';
+import fs from 'fs';
+
+const credentials = JSON.parse(fs.readFileSync('./credentials.json'))
+
+admin.initializeApp({
+  credential: admin.credential.cert(credentials)
+});
+
 
 const app = express();
 
@@ -33,25 +42,52 @@ app.get('/api/articles/:name', async (req, res) => {
     const article = await db.collection('articles').findOne({ articleName });
 
     res.json(article);
-}
+});
 
-)
+//Middleware run here so only post calls use the auth token
+app.use(async function (req,res,next) {
+    const {authtoken} = req.headers;
+
+    if(authtoken)
+    {
+     const user = await admin.auth().verifyIdToken(authtoken);
+     req.user =user;
+     next();
+    }
+    else
+    {
+        res.sendStatus(400);
+    } 
+});
 
 app.post('/api/articles/:name/upvote', async (req, res) => {
+   
+    const {uid} =req.user;
+
+    upvoteIds:[ 123, 234, 345];
+
+    const article = await db.collection('articles').findOne({articleName: req.params.name});
+
+    const upvoteIds =article.upvoteIds ||  [];
+    const canUpvote =uid && !upvoteIds.includes(uid);
+
+    if(canUpvote){
 
     const updatedArticle = await db.collection('articles').findOneAndUpdate({ articleName: req.params.name },
         {
-            $inc: { upVotes: 1 }
+            $inc: { upVotes: 1 },
+            $push : {upvoteIds :uid},
         },
         {
             ReturnDocument: "after",
         });
-
-
-    res.json(updatedArticle);
+        res.json(updatedArticle);
+    }
+    else{
+        res.sendStatus(403);
+    }
 }
-
-)
+);
 
 
 
