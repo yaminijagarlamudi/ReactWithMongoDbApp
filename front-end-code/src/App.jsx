@@ -9,6 +9,8 @@ import ArticlePage,{loader as articleLoader} from './frontendpages/ArticlePage'
 import AboutPage from './frontendpages/AboutPage'
 import Layout from './Layout'
 import NotFoundPage from './frontendpages/NotFoundPage'
+import LoginPage from './frontendpages/LoginPage'
+import CreateAccountPage from './frontendpages/CreateAccountPage'
 import axios from 'axios';
 
 const routes = [{
@@ -28,9 +30,17 @@ const routes = [{
     element: <ArticlesListpage />
   },
   {
-    path: '/articles/:name', 
+    path: '/articles/:name', // -> /articles/learn-react
     element: <ArticlePage />,
     loader : articleLoader
+  },
+  {
+    path: '/login',
+    element: <LoginPage/>
+  },
+  {
+    path : '/create-account',
+    element: <CreateAccountPage/>
   }]
 }]
 

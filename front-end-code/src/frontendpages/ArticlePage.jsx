@@ -4,6 +4,7 @@ import articles from "../article-content";
 import axios from 'axios';
 import CommentsList from "../commentsList";
 import AddCommentForm from "../AddCommentForm";
+import useUser from "../useUser";
 
 export default function ArticlePage()
 {
@@ -15,19 +16,27 @@ export default function ArticlePage()
     const[upVotes,setUpVotes] = useState(initialUpVotes);
     const[comments,setComments] =useState(initialComments);
 
+    const {isLoading,user} = useUser();
+
     async function onUpVoteClicked() {
-        
-        const response = await axios.post('/api/articles/'+ articleName +'/upvote');
+        const token =user && await user.getIdToken();
+        const headers = token ? {authtoken:token} :{};
+
+        const response = await axios.post('/api/articles/'+ articleName +'/upvote',null,{headers});
         const updatedArticleData = response.data;
         setUpVotes(updatedArticleData.upVotes);
     }
 
 
     async function onAddcomment({nameText,commentText}) {
+
+        const token =user && await user.getIdToken();
+        const headers = token ? {authtoken:token} :{};
+       
         const response = await axios.post('/api/articles/'+ articleName +'/comments',{
             postedBy:nameText,
             text :commentText
-        });
+        },{headers});
         const updatedArticleData = response.data;
         setComments(updatedArticleData.comments);
     }
@@ -37,12 +46,14 @@ export default function ArticlePage()
     return (
         <>
     <h1>{article.title}</h1>
-    
-    <button onClick={onUpVoteClicked}>Upvote</button>
+    {user &&
+    <button onClick={onUpVoteClicked}>Upvote</button>}
     <p>This article has {upVotes} upvotes! </p>
     {article.content.map(p=> <p key={p}>{p}</p>)}
 
-    <AddCommentForm onAddcomment={onAddcomment}/>
+    {user 
+    ? <AddCommentForm onAddcomment={onAddcomment}/>
+    : <p>Log in to add a comment</p>}
     <CommentsList comments={ comments}/>
     </>
     );
