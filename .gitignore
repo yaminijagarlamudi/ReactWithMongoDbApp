@@ -51,3 +51,8 @@ dist-ssr
 data/
 
 back-end/credentials.json
+back-end/dist
+back-end/.env
+back-end/prod-env.yaml
+
+front-end-code/google-cloud-sdk

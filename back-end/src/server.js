@@ -2,6 +2,11 @@ import express from 'express';
 import { MongoClient, ReturnDocument, ServerApiVersion } from 'mongodb'
 import admin from 'firebase-admin';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __fileName = fileURLToPath(import.meta.url);
+const __dirName = path.dirname(__fileName);
 
 const credentials = JSON.parse(fs.readFileSync('./credentials.json'))
 
@@ -17,7 +22,9 @@ app.use(express.json());
 let db;
 
 async function connectToDb() {
-    const uri = 'mongodb://127.0.0.1:27017';
+    const uri = process.env.MONGODB_USERNAME 
+    ? `mongodb+srv://mongodb:${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongocluster.jsviodj.mongodb.net/?retryWrites=true&w=majority&appName=MongoCluster`
+    :  'mongodb://127.0.0.1:27017' ;
     const client = new MongoClient(uri, {
         serverApi:
         {
@@ -33,8 +40,14 @@ async function connectToDb() {
 }
 
 
+// Logic to serve Front end and Back End from same server
+app.use(express.static(path.join(__dirName,'../dist')))
 
-// Cleanup since data is persisted in Mongo now
+app.get(/^(?!\/api).+/,(req,res) => {
+    res.sendFile(path.join(__dirName,'../dist/index.html'));
+});
+
+
 
 app.get('/api/articles/:name', async (req, res) => {
     const articleName = req.params.name;
@@ -109,9 +122,11 @@ app.post('/api/articles/:name/comments', async (req, res) => {
 });
 
 
+const port =process.env.port || 8000;
+
 async function start() {
     connectToDb();
-    app.listen(8000, function () {
+    app.listen(port, function () {
         console.log('Server is listening in port 8000');
     })
 }
